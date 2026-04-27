@@ -2,14 +2,13 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160/build/three.mod
 import { ARButton } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/webxr/ARButton.js';
 import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160/examples/jsm/loaders/GLTFLoader.js';
 
-const debugDiv = document.getElementById("debug");
+const debug = document.getElementById("debug");
 
 function log(msg) {
+  debug.innerHTML += msg + "<br>";
   console.log(msg);
-  debugDiv.innerHTML += msg + "<br>";
 }
 
-// -------- DEBUG DE BASE --------
 log("🚀 Script chargé");
 
 let camera, scene, renderer;
@@ -18,15 +17,13 @@ init();
 
 function init() {
 
-  log("Init...");
-
-  // Vérif WebXR
   if (!navigator.xr) {
-    log("❌ WebXR NON supporté");
+    log("❌ WebXR NON supporté → fallback activé");
+    fallbackMode();
     return;
-  } else {
-    log("✅ WebXR dispo");
   }
+
+  log("✅ WebXR dispo");
 
   scene = new THREE.Scene();
 
@@ -40,18 +37,15 @@ function init() {
 
   log("🎥 Renderer OK");
 
-  // Lumière
   const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
   scene.add(light);
 
-  // -------- CHARGEMENT MODELE --------
+  // charger modèle
   const loader = new GLTFLoader();
-
-  log("📦 Chargement modèle...");
 
   loader.load(
     './assets/model.glb',
-    function (gltf) {
+    (gltf) => {
       log("✅ Modèle chargé");
 
       const model = gltf.scene;
@@ -61,12 +55,11 @@ function init() {
       scene.add(model);
     },
     undefined,
-    function (error) {
-      log("❌ ERREUR modèle: " + error.message);
+    (error) => {
+      log("❌ erreur modèle");
     }
   );
 
-  // -------- BOUTON AR --------
   const arButton = ARButton.createButton(renderer, {
     optionalFeatures: ['hit-test']
   });
@@ -74,28 +67,31 @@ function init() {
   document.body.appendChild(arButton);
   arButton.style.display = "none";
 
-  document.getElementById("startAR").addEventListener("click", async () => {
+  document.getElementById("startAR").onclick = async () => {
 
-    log("👉 Click bouton");
+    log("👉 bouton cliqué");
 
     const supported = await navigator.xr.isSessionSupported("immersive-ar");
 
     if (!supported) {
-      log("❌ AR non supporté");
-      alert("AR non supporté");
+      log("❌ AR non supporté → fallback");
+      fallbackMode();
       return;
     }
 
-    log("✅ AR supporté → lancement");
+    log("✅ lancement AR");
 
     arButton.style.display = "block";
     arButton.click();
-  });
+  };
 
-  renderer.setAnimationLoop(render);
+  renderer.setAnimationLoop(() => {
+    renderer.render(scene, camera);
+  });
 }
 
-// -------- RENDER --------
-function render() {
-  renderer.render(scene, camera);
+// -------- FALLBACK --------
+function fallbackMode() {
+  document.getElementById("fallback").style.display = "block";
+  log("📱 mode fallback activé (model-viewer)");
 }
