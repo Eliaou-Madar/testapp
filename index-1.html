@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AR Viewer</title>
+
+  <!-- model-viewer : la lib Google qui gère tout l'AR automatiquement -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #2a2a3a;
+      --accent: #7c6dfa;
+      --accent2: #fa6d9f;
+      --text: #f0f0ff;
+      --text-muted: #888899;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124,109,250,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(250,109,159,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative; z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+    }
+    .logo span {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* ── UPLOAD ZONE ── */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 32px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 28px;
+      background: rgba(124,109,250,0.03);
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--accent);
+      background: rgba(124,109,250,0.07);
+    }
+    .upload-zone .icon {
+      font-size: 2.4rem;
+      margin-bottom: 10px;
+    }
+    .upload-zone h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+    .upload-zone p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+    .upload-zone p strong {
+      color: var(--accent);
+    }
+    #file-input { display: none; }
+
+    /* ── VIEWER WRAPPER ── */
+    .viewer-wrapper {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 420px;
+      background: transparent;
+      --poster-color: transparent;
+    }
+
+    /* ── AR BUTTON custom ── */
+    .ar-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 28px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      justify-content: center;
+      transition: opacity 0.2s, transform 0.15s;
+      margin-bottom: 12px;
+      letter-spacing: 0.01em;
+    }
+    .ar-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .ar-btn:active { transform: scale(0.98); }
+    .ar-btn .icon { font-size: 1.3rem; }
+
+    /* ── CONTROLS ── */
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .ctrl-btn {
+      flex: 1;
+      min-width: 120px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      padding: 12px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .ctrl-btn:hover { border-color: var(--accent); background: rgba(124,109,250,0.07); }
+    .ctrl-btn.active { border-color: var(--accent); color: var(--accent); }
+
+    /* ── MODELS GRID ── */
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin: 32px 0 14px;
+    }
+
+    .models-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .model-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+      text-align: center;
+    }
+    .model-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .model-card.active { border-color: var(--accent); background: rgba(124,109,250,0.08); }
+    .model-card .emoji { font-size: 2rem; margin-bottom: 8px; display: block; }
+    .model-card .name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+    .model-card .src {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* ── INFO BOX ── */
+    .info-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .info-box h4 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-box ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .info-box li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .info-box li::before {
+      content: '→';
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── NO AR WARNING ── */
+    .no-ar {
+      display: none;
+      background: rgba(250,109,100,0.1);
+      border: 1px solid rgba(250,109,100,0.3);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 0.87rem;
+      color: #fa9090;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 480px) {
+      model-viewer { height: 320px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo"><span>AR</span>View</div>
+    <div class="badge">WebXR · three.js</div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>Visualise tes objets<br><em>dans le monde réel</em></h1>
+    <p>Charge n'importe quel modèle 3D et place-le dans ton environnement grâce à la réalité augmentée.</p>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="upload-zone" id="upload-zone">
+    <div class="icon">📦</div>
+    <h3>Charge ton propre modèle</h3>
+    <p>Glisse un fichier <strong>.glb</strong> ou <strong>.gltf</strong> ici<br>ou clique pour parcourir</p>
+    <input type="file" id="file-input" accept=".glb,.gltf" />
+  </div>
+
+  <!-- VIEWER -->
+  <div class="viewer-wrapper">
+    <model-viewer
+      id="viewer"
+      src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+      alt="Modèle 3D"
+      shadow-intensity="1"
+      camera-controls
+      touch-action="pan-y"
+      auto-rotate
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      ar-scale="auto"
+    >
+    </model-viewer>
+  </div>
+
+  <!-- NO AR WARNING -->
+  <div class="no-ar" id="no-ar-msg">
+    ⚠️ Ton appareil ne supporte pas la RA. Utilise Chrome sur Android pour tester l'AR.
+  </div>
+
+  <!-- AR BUTTON -->
+  <button class="ar-btn" id="ar-launch-btn">
+    <span class="icon">🔮</span>
+    Placer dans le monde réel (AR)
+  </button>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="ctrl-btn active" id="btn-rotate" onclick="toggleRotate(this)">
+      🔄 Rotation auto
+    </button>
+    <button class="ctrl-btn" id="btn-shadow" onclick="toggleShadow(this)">
+      🌑 Ombre
+    </button>
+    <button class="ctrl-btn" onclick="resetCamera()">
+      🎯 Centrer
+    </button>
+  </div>
+
+  <!-- DEMO MODELS -->
+  <div class="section-title">Modèles de démonstration</div>
+  <div class="models-grid">
+    <div class="model-card active" onclick="loadModel(this, 'https://modelviewer.dev/shared-assets/models/Astronaut.glb')">
+      <span class="emoji">👨‍🚀</span>
+      <div class="name">Astronaute</div>
+      <div class="src">modelviewer.dev</div>
+    </div>
+    <div class="model-card" onclick="loadModel(this, 'https://modelviewer.dev/shared-assets/models/shishkebab.glb')">
+      <span class="emoji">🍡</span>
+      <div class="name">Brochette</div>
+      <div class="src">modelviewer.dev</div>
+    </div>
+    <div class="model-card" onclick="loadModel(this, 'https://modelviewer.dev/shared-assets/models/RobotExpressive/RobotExpressive.glb')">
+      <span class="emoji">🤖</span>
+      <div class="name">Robot</div>
+      <div class="src">modelviewer.dev</div>
+    </div>
+    <div class="model-card" onclick="loadModel(this, 'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb')">
+      <span class="emoji">🚗</span>
+      <div class="name">Voiture</div>
+      <div class="src">Sample Assets</div>
+    </div>
+    <div class="model-card" onclick="loadModel(this, 'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb')">
+      <span class="emoji">🧑‍🦯</span>
+      <div class="name">Neil Armstrong</div>
+      <div class="src">modelviewer.dev</div>
+    </div>
+    <div class="model-card" onclick="loadModel(this, 'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Fox/glTF-Binary/Fox.glb')">
+      <span class="emoji">🦊</span>
+      <div class="name">Renard</div>
+      <div class="src">Sample Assets</div>
+    </div>
+  </div>
+
+  <!-- HOW TO -->
+  <div class="info-box">
+    <h4>📱 Comment utiliser l'AR</h4>
+    <ul>
+      <li>Ouvre ce fichier depuis <strong>Chrome sur Android</strong></li>
+      <li>Choisis un modèle 3D dans la liste ou charge le tien (.glb)</li>
+      <li>Appuie sur le bouton <strong>"Placer dans le monde réel"</strong></li>
+      <li>Pointe ta caméra vers le sol — l'objet se place automatiquement</li>
+      <li>Pinch pour redimensionner, glisse pour déplacer</li>
+    </ul>
+  </div>
+
+  <div class="info-box">
+    <h4>📦 Où trouver des modèles 3D gratuits ?</h4>
+    <ul>
+      <li><strong>poly.pizza</strong> — milliers de modèles gratuits en .glb</li>
+      <li><strong>sketchfab.com</strong> → filtrer "downloadable" → exporter en .glb</li>
+      <li><strong>market.pmnd.rs</strong> — modèles orientés Three.js</li>
+    </ul>
+  </div>
+
+  <footer>
+    Propulsé par <strong>model-viewer</strong> (Google) · WebXR · three.js
+  </footer>
+
+</div>
+
+<script>
+  const viewer = document.getElementById('viewer');
+  const uploadZone = document.getElementById('upload-zone');
+  const fileInput = document.getElementById('file-input');
+  const arBtn = document.getElementById('ar-launch-btn');
+  const noArMsg = document.getElementById('no-ar-msg');
+
+  // ── Vérifier support AR ──
+  viewer.addEventListener('load', () => {
+    if (!viewer.canActivateAR) {
+      noArMsg.style.display = 'block';
+      arBtn.style.opacity = '0.5';
+    }
+  });
+
+  // ── Lancer l'AR ──
+  arBtn.addEventListener('click', () => {
+    if (viewer.canActivateAR) {
+      viewer.activateAR();
+    } else {
+      alert('⚠️ Ton appareil ne supporte pas la RA WebXR.\n\nUtilise Chrome sur un téléphone Android récent.');
+    }
+  });
+
+  // ── Charger un modèle depuis la grille ──
+  function loadModel(card, url) {
+    document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    viewer.src = url;
+    viewer.autoRotate = true;
+  }
+
+  // ── Upload fichier local ──
+  uploadZone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
+    viewer.src = url;
+    uploadZone.innerHTML = `<div class="icon">✅</div><h3>${file.name}</h3><p>Modèle chargé avec succès</p>`;
+  });
+
+  // ── Drag & Drop ──
+  uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('drag-over');
+  });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && (file.name.endsWith('.glb') || file.name.endsWith('.gltf'))) {
+      const url = URL.createObjectURL(file);
+      viewer.src = url;
+      uploadZone.innerHTML = `<div class="icon">✅</div><h3>${file.name}</h3><p>Modèle chargé avec succès</p>`;
+    }
+  });
+
+  // ── Rotation ──
+  function toggleRotate(btn) {
+    viewer.autoRotate = !viewer.autoRotate;
+    btn.classList.toggle('active', viewer.autoRotate);
+  }
+
+  // ── Ombre ──
+  let shadowOn = false;
+  function toggleShadow(btn) {
+    shadowOn = !shadowOn;
+    viewer.shadowIntensity = shadowOn ? 2 : 1;
+    viewer.shadowSoftness = shadowOn ? 1 : 0.5;
+    btn.classList.toggle('active', shadowOn);
+  }
+
+  // ── Reset caméra ──
+  function resetCamera() {
+    viewer.cameraOrbit = 'auto auto auto';
+    viewer.fieldOfView = 'auto';
+  }
+</script>
+
+</body>
+</html>
