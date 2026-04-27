@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>AR simple</title>
+
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+    }
+
+    model-viewer {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      padding: 15px;
+      background: black;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+<button id="btn">Voir en AR</button>
+
+<model-viewer
+  id="viewer"
+  src="./assets/model.glb"
+  ar
+  ar-modes="webxr scene-viewer quick-look"
+  ar-placement="floor"
+  camera-controls
+  auto-rotate>
+</model-viewer>
+
+<script>
+  document.getElementById("btn").onclick = () => {
+    document.getElementById("viewer").activateAR();
+  };
+</script>
+
+</body>
+</html>
