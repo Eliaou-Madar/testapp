@@ -2,30 +2,50 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>AR XR</title>
+  <title>AR simple</title>
 
-  <!-- Model Viewer (fallback simple) -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+    }
+
+    model-viewer {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      padding: 15px;
+      background: black;
+      color: white;
+    }
+  </style>
 </head>
+
 <body>
 
-<button id="startAR">Lancer AR</button>
+<button id="btn">Voir en AR</button>
 
-<div id="debug"></div>
-
-<!-- fallback si WebXR casse -->
-<model-viewer 
-  id="fallback"
+<model-viewer
+  id="viewer"
   src="./assets/model.glb"
   ar
-  auto-rotate
+  ar-modes="webxr scene-viewer quick-look"
   camera-controls
-  style="display:none;">
+  auto-rotate>
 </model-viewer>
 
-<script type="module" src="script.js"></script>
+<script>
+  document.getElementById("btn").onclick = () => {
+    document.getElementById("viewer").activateAR();
+  };
+</script>
 
 </body>
 </html>
