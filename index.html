@@ -1,106 +1,608 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AR Plats 3D</title>
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap');
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0a0a0f; --surface: #13131a; --border: #2a2a3a;
-      --accent: #7c6dfa; --accent2: #fa6d9f; --text: #f0f0ff; --muted: #888899;
-    }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    body::before {
-      content: ''; position: fixed; inset: 0; z-index: 0;
-      background: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124,109,250,.10) 0%, transparent 70%),
-                  radial-gradient(ellipse 50% 40% at 80% 80%, rgba(250,109,159,.07) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .wrap { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 20px 14px 60px; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>La Trattoria — Menu</title>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0e0c0a;
+  --surface:#161410;
+  --surface2:#1e1b17;
+  --border:#2e2820;
+  --gold:#c9a84c;
+  --gold2:#e8c97a;
+  --cream:#f5efe6;
+  --text:#ede8df;
+  --muted:#8a7f72;
+  --red:#c0392b;
+}
 
-    header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
-    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.3rem; }
-    .logo span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .pill { font-size: .7rem; padding: 4px 10px; border: 1px solid var(--border); border-radius: 20px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-    .hero { text-align: center; margin-bottom: 28px; }
-    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.8rem,5vw,2.8rem); font-weight: 800; line-height: 1.1; letter-spacing: -.03em; margin-bottom: 10px; }
-    .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .hero p { color: var(--muted); font-size: .97rem; line-height: 1.6; max-width: 440px; margin: 0 auto; }
+/* ── GRAIN OVERLAY ── */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");opacity:.4;pointer-events:none;z-index:9999}
 
-    .status-bar { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin-bottom: 14px; font-size: .85rem; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .dot.green { background: #4ade80; box-shadow: 0 0 6px #4ade8088; }
-    .dot.yellow { background: #facc15; box-shadow: 0 0 6px #facc1588; }
-    .dot.red { background: #f87171; }
-    #status-text { flex: 1; color: var(--muted); }
+/* ── HERO HEADER ── */
+.hero{
+  position:relative;min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:40px 20px;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,168,76,.10) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(201,168,76,.05) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, #0e0c0a 0%, #0a0806 100%);
+}
+.hero-line{position:absolute;top:0;left:50%;transform:translateX(-50%);width:1px;height:100%;background:linear-gradient(to bottom,transparent,rgba(201,168,76,.3),transparent);pointer-events:none}
+.hero-ornament{
+  position:relative;z-index:1;
+  font-family:'Cormorant Garamond',serif;font-size:.75rem;letter-spacing:.3em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:24px;opacity:.8;
+}
+.hero h1{
+  position:relative;z-index:1;
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3.5rem,12vw,9rem);font-weight:300;line-height:.9;
+  letter-spacing:-.02em;color:var(--cream);margin-bottom:8px;
+}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.hero-sub{
+  position:relative;z-index:1;
+  font-size:.8rem;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--muted);margin-top:24px;
+}
+.hero-divider{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:16px;margin:32px 0;width:280px;
+}
+.hero-divider::before,.hero-divider::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,var(--gold))}
+.hero-divider::after{background:linear-gradient(to left,transparent,var(--gold))}
+.hero-divider span{color:var(--gold);font-size:1.1rem}
+.hero-scroll{
+  position:relative;z-index:1;margin-top:48px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);cursor:pointer;
+  animation:bobble 2s ease-in-out infinite;
+}
+.hero-scroll svg{opacity:.5}
+@keyframes bobble{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
 
-    .viewer-box { border-radius: 18px; overflow: hidden; border: 1px solid var(--border); background: var(--surface); margin-bottom: 14px; }
-    model-viewer { width: 100%; height: 400px; background: transparent; --poster-color: transparent; }
+/* ── NAV TABS ── */
+.nav-sticky{
+  position:sticky;top:0;z-index:100;
+  background:rgba(14,12,10,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{
+  max-width:1100px;margin:0 auto;padding:0 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.nav-brand{
+  font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;
+  color:var(--gold);letter-spacing:.05em;white-space:nowrap;padding:16px 0;flex-shrink:0;
+}
+.nav-tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;padding:12px 0}
+.nav-tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:8px 18px;border-radius:6px;font-size:.82rem;font-weight:500;
+  letter-spacing:.04em;cursor:pointer;border:1px solid transparent;
+  transition:all .25s;white-space:nowrap;color:var(--muted);background:transparent;
+}
+.tab:hover{color:var(--text);border-color:var(--border)}
+.tab.active{color:var(--gold);border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.07)}
 
-    .ar-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; border: none; border-radius: 50px; padding: 15px 28px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: opacity .2s, transform .15s; margin-bottom: 10px; }
-    .ar-btn:hover { opacity: .9; transform: translateY(-1px); }
-    .ar-btn:active { transform: scale(.98); }
-    .ar-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+/* ── MAIN CONTENT ── */
+.main{max-width:1100px;margin:0 auto;padding:60px 20px 100px}
 
-    .ctrl-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-    .ctrl { flex: 1; min-width: 100px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; color: var(--text); padding: 11px 12px; font-family: 'DM Sans', sans-serif; font-size: .83rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; transition: border-color .2s, background .2s; }
-    .ctrl:hover { border-color: var(--accent); background: rgba(124,109,250,.07); }
-    .ctrl.on { border-color: var(--accent); color: var(--accent); }
+/* ── SECTION ── */
+.section{display:none;animation:fadeIn .4s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-    .upload-zone { border: 2px dashed var(--border); border-radius: 14px; padding: 24px 16px; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; background: rgba(124,109,250,.02); margin-bottom: 20px; }
-    .upload-zone:hover, .upload-zone.over { border-color: var(--accent); background: rgba(124,109,250,.06); }
-    .upload-zone .ico { font-size: 2rem; margin-bottom: 8px; }
-    .upload-zone h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .95rem; margin-bottom: 4px; }
-    .upload-zone p { color: var(--muted); font-size: .82rem; }
-    .upload-zone p strong { color: var(--accent); }
-    #file-in { display: none; }
+.section-header{margin-bottom:48px;text-align:center}
+.section-header h2{
+  font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5vw,3.5rem);
+  font-weight:300;color:var(--cream);letter-spacing:-.01em;
+}
+.section-header h2 em{font-style:italic;color:var(--gold)}
+.section-header p{color:var(--muted);font-size:.9rem;margin-top:10px;max-width:480px;margin-left:auto;margin-right:auto}
+.section-rule{
+  display:flex;align-items:center;gap:12px;margin:20px auto 0;width:160px;
+}
+.section-rule::before,.section-rule::after{content:'';flex:1;height:1px;background:var(--border)}
+.section-rule span{color:var(--gold);font-size:.9rem}
 
-    .sec { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0 0 12px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 10px; margin-bottom: 28px; }
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: 14px 10px; cursor: pointer; text-align: center; transition: border-color .2s, transform .15s; }
-    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
-    .card.on { border-color: var(--accent); background: rgba(124,109,250,.08); }
-    .card .e { font-size: 1.9rem; display: block; margin-bottom: 6px; }
-    .card .n { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .78rem; }
-    .card .s { font-size: .68rem; color: var(--muted); margin-top: 2px; }
+/* ── SUBSECTION ── */
+.sub-label{
+  font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-style:italic;
+  color:var(--gold);margin:48px 0 24px;padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;
+}
+.sub-label::before{content:'';flex:1;height:1px;background:var(--border)}
 
-    .info { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: 16px 18px; margin-bottom: 14px; }
-    .info h4 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .87rem; margin-bottom: 8px; }
-    .info ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
-    .info li { font-size: .83rem; color: var(--muted); display: flex; gap: 8px; }
-    .info li::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+/* ── MENU GRID ── */
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:20px;
+}
 
-    footer { text-align: center; color: var(--muted); font-size: .78rem; margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--border); }
-    @media(max-width:480px){ model-viewer { height: 300px; } }
-  </style>
+/* ── DISH CARD ── */
+.dish-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;cursor:pointer;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .3s;
+  position:relative;
+}
+.dish-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(201,168,76,.4);
+  box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 1px rgba(201,168,76,.1);
+}
+.dish-img{
+  width:100%;height:180px;object-fit:cover;display:block;
+  background:var(--surface2);transition:transform .4s;
+}
+.dish-card:hover .dish-img{transform:scale(1.04)}
+.dish-img-placeholder{
+  width:100%;height:180px;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:3.5rem;transition:transform .4s;
+}
+.dish-card:hover .dish-img-placeholder{transform:scale(1.05)}
+.dish-body{padding:18px}
+.dish-name{
+  font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;
+  color:var(--cream);margin-bottom:6px;line-height:1.2;
+}
+.dish-desc{
+  font-size:.82rem;color:var(--muted);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  margin-bottom:14px;
+}
+.dish-footer{display:flex;align-items:center;justify-content:space-between}
+.dish-price{
+  font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--gold);
+}
+.dish-3d-btn{
+  display:flex;align-items:center;gap:6px;
+  font-size:.72rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--gold);border:1px solid rgba(201,168,76,.3);border-radius:6px;
+  padding:6px 12px;transition:all .2s;
+}
+.dish-card:hover .dish-3d-btn{background:rgba(201,168,76,.1);border-color:var(--gold)}
+.dish-badge{
+  position:absolute;top:12px;left:12px;
+  background:var(--red);color:#fff;font-size:.65rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:4px;
+}
+.dish-badge.new{background:var(--gold);color:#0e0c0a}
+
+/* ── 3D MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(10,8,6,.96);backdrop-filter:blur(4px);
+  animation:overlayIn .3s ease;
+}
+.modal-overlay.open{display:flex;flex-direction:column}
+@keyframes overlayIn{from{opacity:0}to{opacity:1}}
+
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--gold)}
+.modal-close{
+  width:36px;height:36px;border-radius:50%;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.modal-close:hover{border-color:var(--gold);color:var(--gold)}
+
+.modal-viewer{flex:1;position:relative;overflow:hidden}
+model-viewer#modal-mv{
+  width:100%;height:100%;background:transparent;--poster-color:transparent;
+}
+
+/* AR bottom panel */
+.ar-panel{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(to top,rgba(10,8,6,.98) 70%,transparent);
+  padding:20px 20px 32px;
+  transform:translateY(100%);transition:transform .4s cubic-bezier(.34,1.2,.64,1);
+  z-index:10;
+}
+.ar-panel.visible{transform:translateY(0)}
+
+.ar-dish-nav{
+  display:flex;align-items:stretch;gap:12px;overflow-x:auto;scrollbar-width:none;
+  padding-bottom:4px;margin-bottom:16px;
+}
+.ar-dish-nav::-webkit-scrollbar{display:none}
+.ar-nav-item{
+  flex-shrink:0;width:200px;background:rgba(30,27,23,.9);border:1px solid var(--border);
+  border-radius:12px;padding:14px;cursor:pointer;transition:all .25s;
+}
+.ar-nav-item.active{border-color:var(--gold);background:rgba(201,168,76,.08)}
+.ar-nav-name{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:var(--cream);margin-bottom:4px}
+.ar-nav-desc{font-size:.75rem;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ar-nav-price{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold);margin-top:8px}
+
+.ar-actions{display:flex;gap:10px}
+.ar-main-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0e0c0a;
+  border:none;border-radius:10px;padding:14px;
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;
+  transition:opacity .2s,transform .15s;
+}
+.ar-main-btn:hover{opacity:.9;transform:translateY(-1px)}
+.ar-main-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.ar-close-btn{
+  width:48px;height:48px;border-radius:10px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;
+}
+.ar-close-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* non-AR info */
+.modal-info{
+  padding:16px 20px 24px;border-top:1px solid var(--border);flex-shrink:0;
+}
+.modal-dish-name{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;color:var(--cream);margin-bottom:6px}
+.modal-dish-desc{font-size:.87rem;color:var(--muted);line-height:1.6;margin-bottom:12px}
+.modal-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.modal-price{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold)}
+.modal-ar-btn{
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0e0c0a;
+  border:none;border-radius:10px;padding:13px 22px;
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:.9rem;cursor:pointer;
+  transition:opacity .2s,transform .15s;
+}
+.modal-ar-btn:hover{opacity:.9;transform:translateY(-1px)}
+.modal-ar-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ── FOOTER ── */
+.site-footer{
+  text-align:center;padding:40px 20px;border-top:1px solid var(--border);
+  color:var(--muted);font-size:.78rem;
+}
+.site-footer strong{color:var(--gold)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+@media(max-width:600px){
+  .nav-inner{flex-direction:column;align-items:flex-start;gap:0;padding:0 12px}
+  .nav-brand{padding:12px 0 4px}
+  .nav-tabs{padding:0 0 10px;width:100%}
+  .tab{padding:7px 14px;font-size:.78rem}
+  .modal-info{padding:12px 14px 20px}
+  .ar-nav-item{width:170px}
+}
+</style>
 </head>
 <body>
-<div class="wrap">
 
-  <header>
-    <div class="logo"><span>AR</span>Plats</div>
-    <div class="pill">WebXR · model-viewer</div>
-  </header>
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-line"></div>
+  <div class="hero-ornament">Depuis 1987 · Milano · Roma</div>
+  <h1>La<br><em>Trattoria</em></h1>
+  <div class="hero-divider"><span>✦</span></div>
+  <p class="hero-sub">Cuisine italienne authentique · Paris 6ème</p>
+  <div class="hero-scroll" onclick="document.querySelector('.nav-sticky').scrollIntoView({behavior:'smooth'})">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    Voir le menu
+  </div>
+</div>
 
-  <div class="hero">
-    <h1>Pose tes objets<br><em>sur tes assiettes</em></h1>
-    <p>Pointe vers une surface plate — l'objet se pose dessus, reste fixe, et tu peux tourner autour.</p>
+<!-- NAV -->
+<div class="nav-sticky">
+  <div class="nav-inner">
+    <div class="nav-brand">La Trattoria</div>
+    <div class="nav-tabs">
+      <button class="tab active" onclick="showSection('entrees',this)">Entrées</button>
+      <button class="tab" onclick="showSection('plats',this)">Plats</button>
+      <button class="tab" onclick="showSection('desserts',this)">Desserts</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ═══════════ ENTRÉES ═══════════ -->
+  <div class="section active" id="sec-entrees">
+    <div class="section-header">
+      <h2>Nos <em>Entrées</em></h2>
+      <p>Des débuts délicats pour éveiller vos papilles</p>
+      <div class="section-rule"><span>✦</span></div>
+    </div>
+    <div class="menu-grid">
+
+      <div class="dish-card" onclick="openDish('entrees',0)">
+        <div class="dish-badge new">Nouveau</div>
+        <div class="dish-img-placeholder">🥗</div>
+        <div class="dish-body">
+          <div class="dish-name">Burrata Pugliese</div>
+          <div class="dish-desc">Burrata crémeuse, tomates cerises rôties, basilic frais, huile d'olive vierge extra, fleur de sel</div>
+          <div class="dish-footer">
+            <span class="dish-price">14,50 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('entrees',1)">
+        <div class="dish-img-placeholder">🍄</div>
+        <div class="dish-body">
+          <div class="dish-name">Carpaccio di Manzo</div>
+          <div class="dish-desc">Fines tranches de bœuf cru, copeaux de parmesan 24 mois, câpres, roquette sauvage, citron</div>
+          <div class="dish-footer">
+            <span class="dish-price">16,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('entrees',2)">
+        <div class="dish-badge">Chef</div>
+        <div class="dish-img-placeholder">🦑</div>
+        <div class="dish-body">
+          <div class="dish-name">Polpette di Mare</div>
+          <div class="dish-desc">Boulettes de crevettes et cabillaud, sauce vierge au citron vert, herbes fraîches, piment doux</div>
+          <div class="dish-footer">
+            <span class="dish-price">17,50 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('entrees',3)">
+        <div class="dish-img-placeholder">🥕</div>
+        <div class="dish-body">
+          <div class="dish-name">Zuppa di Pomodoro</div>
+          <div class="dish-desc">Velouté de tomates San Marzano, crème fraîche, croûtons à l'ail confit, basilic</div>
+          <div class="dish-footer">
+            <span class="dish-price">11,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <div class="status-bar">
-    <div class="dot yellow" id="dot"></div>
-    <span id="status-text">Prêt — choisis un modèle puis lance l'AR</span>
+  <!-- ═══════════ PLATS ═══════════ -->
+  <div class="section" id="sec-plats">
+    <div class="section-header">
+      <h2>Nos <em>Plats</em></h2>
+      <p>L'âme de la cuisine italienne dans chaque assiette</p>
+      <div class="section-rule"><span>✦</span></div>
+    </div>
+
+    <div class="sub-label">Pâtes &amp; Risotti <span>✦</span></div>
+    <div class="menu-grid">
+
+      <div class="dish-card" onclick="openDish('plats',0)">
+        <div class="dish-badge">Best-seller</div>
+        <div class="dish-img-placeholder">🍝</div>
+        <div class="dish-body">
+          <div class="dish-name">Tagliatelle al Ragù</div>
+          <div class="dish-desc">Tagliatelles fraîches maison, ragù bolognese mijoté 6h, parmesan, noix de muscade</div>
+          <div class="dish-footer">
+            <span class="dish-price">19,50 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('plats',1)">
+        <div class="dish-img-placeholder">🍜</div>
+        <div class="dish-body">
+          <div class="dish-name">Spaghetti alle Vongole</div>
+          <div class="dish-desc">Spaghettis, palourdes fraîches, vin blanc, ail, persil plat, huile d'olive, piment</div>
+          <div class="dish-footer">
+            <span class="dish-price">22,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('plats',2)">
+        <div class="dish-badge new">Nouveau</div>
+        <div class="dish-img-placeholder">🍚</div>
+        <div class="dish-body">
+          <div class="dish-name">Risotto ai Porcini</div>
+          <div class="dish-desc">Riz Carnaroli, cèpes séchés et frais, beurre de truffe noire, parmesan fondant</div>
+          <div class="dish-footer">
+            <span class="dish-price">24,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sub-label">Pizze <span>✦</span></div>
+    <div class="menu-grid">
+
+      <div class="dish-card" onclick="openDish('plats',3)">
+        <div class="dish-img-placeholder">🍕</div>
+        <div class="dish-body">
+          <div class="dish-name">Margherita D.O.P.</div>
+          <div class="dish-desc">Tomate San Marzano D.O.P., mozzarella di bufala, basilic frais, huile d'olive, four à bois</div>
+          <div class="dish-footer">
+            <span class="dish-price">15,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('plats',4)">
+        <div class="dish-badge">Chef</div>
+        <div class="dish-img-placeholder">🥓</div>
+        <div class="dish-body">
+          <div class="dish-name">Tartufo Nero</div>
+          <div class="dish-desc">Crème de truffe, mozzarella fior di latte, champignons shiitake, copeaux de truffe noire</div>
+          <div class="dish-footer">
+            <span class="dish-price">28,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('plats',5)">
+        <div class="dish-img-placeholder">🌿</div>
+        <div class="dish-body">
+          <div class="dish-name">Quattro Stagioni</div>
+          <div class="dish-desc">Jambon cuit, champignons, artichaut mariné, olives noires, mozzarella, tomate</div>
+          <div class="dish-footer">
+            <span class="dish-price">18,50 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="sub-label">Gratins &amp; Forno <span>✦</span></div>
+    <div class="menu-grid">
+
+      <div class="dish-card" onclick="openDish('plats',6)">
+        <div class="dish-badge">Best-seller</div>
+        <div class="dish-img-placeholder">🧆</div>
+        <div class="dish-body">
+          <div class="dish-name">Lasagne della Nonna</div>
+          <div class="dish-desc">Lasagnes maison, ragù de veau, béchamel à la muscade, parmesan gratinée, herbes fraîches</div>
+          <div class="dish-footer">
+            <span class="dish-price">21,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('plats',7)">
+        <div class="dish-img-placeholder">🫕</div>
+        <div class="dish-body">
+          <div class="dish-name">Parmigiana di Melanzane</div>
+          <div class="dish-desc">Aubergines frites en couches, sauce tomate maison, mozzarella, basilic, gratinées au four</div>
+          <div class="dish-footer">
+            <span class="dish-price">18,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('plats',8)">
+        <div class="dish-badge new">Nouveau</div>
+        <div class="dish-img-placeholder">🧀</div>
+        <div class="dish-body">
+          <div class="dish-name">Gratin di Gnocchi</div>
+          <div class="dish-desc">Gnocchi de pomme de terre maison, gorgonzola, noix, crème, gratinés à la chapelure dorée</div>
+          <div class="dish-footer">
+            <span class="dish-price">20,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <div class="viewer-box">
+  <!-- ═══════════ DESSERTS ═══════════ -->
+  <div class="section" id="sec-desserts">
+    <div class="section-header">
+      <h2>Nos <em>Desserts</em></h2>
+      <p>Une conclusion sucrée digne d'un maestro</p>
+      <div class="section-rule"><span>✦</span></div>
+    </div>
+    <div class="menu-grid">
+
+      <div class="dish-card" onclick="openDish('desserts',0)">
+        <div class="dish-badge">Best-seller</div>
+        <div class="dish-img-placeholder">☕</div>
+        <div class="dish-body">
+          <div class="dish-name">Tiramisù Classico</div>
+          <div class="dish-desc">Biscuits boudoir imbibés d'espresso, mascarpone, jaunes d'œufs, cacao amer, recette 1987</div>
+          <div class="dish-footer">
+            <span class="dish-price">10,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('desserts',1)">
+        <div class="dish-img-placeholder">🍮</div>
+        <div class="dish-body">
+          <div class="dish-name">Panna Cotta al Miele</div>
+          <div class="dish-desc">Panna cotta vanille, miel de châtaigner, coulis de fruits rouges frais, amandes effilées</div>
+          <div class="dish-footer">
+            <span class="dish-price">9,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('desserts',2)">
+        <div class="dish-badge new">Nouveau</div>
+        <div class="dish-img-placeholder">🍋</div>
+        <div class="dish-body">
+          <div class="dish-name">Torta al Limone</div>
+          <div class="dish-desc">Tarte au citron de Sicile, meringue italienne brûlée, zestes confits, sablé breton</div>
+          <div class="dish-footer">
+            <span class="dish-price">11,00 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dish-card" onclick="openDish('desserts',3)">
+        <div class="dish-img-placeholder">🍫</div>
+        <div class="dish-body">
+          <div class="dish-name">Fondant Cioccolato</div>
+          <div class="dish-desc">Coulant au chocolat noir 72%, cœur liquide praliné, glace vanille de Madagascar, éclats de noisette</div>
+          <div class="dish-footer">
+            <span class="dish-price">12,50 €</span>
+            <span class="dish-3d-btn">👁 Voir en 3D</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<footer class="site-footer">
+  <strong>La Trattoria</strong> · 24 rue de Buci, Paris 6ème · Réservations : 01 42 00 00 00<br>
+  <span style="margin-top:6px;display:block">Propulsé par <strong>model-viewer</strong> · WebXR · AR</span>
+</footer>
+
+<!-- ══════════════ 3D / AR MODAL ══════════════ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-header">
+    <span class="modal-title" id="modal-title">Voir en 3D</span>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>
+  <div class="modal-viewer">
     <model-viewer
-      id="mv"
-      src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-      alt="Modèle 3D"
+      id="modal-mv"
+      alt="Plat 3D"
       shadow-intensity="1.2"
       shadow-softness="0.8"
       camera-controls
@@ -111,158 +613,159 @@
       ar-scale="fixed"
       ar-placement="floor"
     ></model-viewer>
+    <!-- AR panel (shown during AR session) -->
+    <div class="ar-panel" id="ar-panel">
+      <div class="ar-dish-nav" id="ar-dish-nav"></div>
+      <div class="ar-actions">
+        <button class="ar-close-btn" onclick="closeModal()">✕</button>
+      </div>
+    </div>
   </div>
-
-  <button class="ar-btn" id="ar-btn">🔮 Placer sur une surface réelle (AR)</button>
-
-  <div class="ctrl-row">
-    <button class="ctrl on" id="btn-rot" onclick="toggleRot(this)">🔄 Rotation</button>
-    <button class="ctrl" onclick="toggleShadow(this)">🌑 Ombre</button>
-    <button class="ctrl" onclick="scaleDown()">🔽 Réduire</button>
-    <button class="ctrl" onclick="scaleUp()">🔼 Agrandir</button>
-    <button class="ctrl" onclick="resetAll()">🎯 Reset</button>
+  <!-- Normal (non-AR) info panel -->
+  <div class="modal-info" id="modal-info">
+    <div class="modal-dish-name" id="modal-dish-name"></div>
+    <div class="modal-dish-desc" id="modal-dish-desc"></div>
+    <div class="modal-footer">
+      <div class="modal-price" id="modal-price"></div>
+      <button class="modal-ar-btn" id="modal-ar-btn" onclick="launchAR()">🔮 Voir en AR</button>
+    </div>
   </div>
-
-  <div class="upload-zone" id="upload-zone">
-    <div class="ico">📦</div>
-    <h3>Charge ton propre modèle</h3>
-    <p>Glisse un fichier <strong>.glb</strong> ou <strong>.gltf</strong> ici</p>
-    <input type="file" id="file-in" accept=".glb,.gltf" />
-  </div>
-
-  <p class="sec">Modèles de démonstration</p>
-  <div class="grid" id="grid">
-    <div class="card on" data-url="https://modelviewer.dev/shared-assets/models/Astronaut.glb"><span class="e">👨‍🚀</span><div class="n">Astronaute</div><div class="s">demo</div></div>
-    <div class="card" data-url="https://modelviewer.dev/shared-assets/models/shishkebab.glb"><span class="e">🍡</span><div class="n">Brochette</div><div class="s">demo</div></div>
-    <div class="card" data-url="https://modelviewer.dev/shared-assets/models/RobotExpressive/RobotExpressive.glb"><span class="e">🤖</span><div class="n">Robot</div><div class="s">demo</div></div>
-    <div class="card" data-url="https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb"><span class="e">🚗</span><div class="n">Voiture</div><div class="s">demo</div></div>
-    <div class="card" data-url="https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Fox/glTF-Binary/Fox.glb"><span class="e">🦊</span><div class="n">Renard</div><div class="s">demo</div></div>
-    <div class="card" data-url="https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb"><span class="e">🧑‍🚀</span><div class="n">Armstrong</div><div class="s">demo</div></div>
-  </div>
-
-  <div class="info">
-    <h4>🍽️ Comment poser un objet sur une assiette</h4>
-    <ul>
-      <li>Ouvre ce site sur <strong>Chrome Android</strong></li>
-      <li>Appuie sur <strong>"Placer sur une surface réelle"</strong></li>
-      <li>Pointe vers ton assiette — un <strong>cercle de ciblage</strong> apparaît sur la surface</li>
-      <li>Quand le cercle est stable, <strong>appuie sur l'écran</strong> pour poser l'objet</li>
-      <li>L'objet <strong>reste fixe</strong> — tu peux tourner autour avec ta caméra</li>
-      <li>Pince pour <strong>redimensionner</strong> · Un doigt pour <strong>faire pivoter</strong></li>
-    </ul>
-  </div>
-
-  <div class="info">
-    <h4>🔒 Pourquoi l'objet bougeait avant ? (corrigé)</h4>
-    <ul>
-      <li><strong>ar-scale: fixed</strong> — la taille ne change plus automatiquement</li>
-      <li><strong>ar-placement: floor</strong> — l'objet se pose sur la surface détectée, pas en l'air</li>
-      <li>Pour une meilleure détection : assure-toi d'avoir <strong>assez de lumière</strong></li>
-      <li>Une assiette avec un <strong>motif ou couleur</strong> est mieux trackée qu'une blanche unie</li>
-    </ul>
-  </div>
-
-  <div class="info">
-    <h4>📦 Trouver des modèles 3D gratuits (.glb)</h4>
-    <ul>
-      <li><strong>poly.pizza</strong> — milliers de modèles gratuits</li>
-      <li><strong>sketchfab.com</strong> → filtrer "downloadable" → exporter .glb</li>
-      <li><strong>market.pmnd.rs</strong> — orienté Three.js</li>
-    </ul>
-  </div>
-
-  <footer>Propulsé par <strong>model-viewer</strong> (Google) · ar-scale: fixed · ar-placement: floor</footer>
 </div>
 
 <script>
-  const mv = document.getElementById('mv');
-  const dot = document.getElementById('dot');
-  const statusText = document.getElementById('status-text');
-  const arBtn = document.getElementById('ar-btn');
-  let scale = 1;
-  let shadowHigh = false;
+// ══ DATA ══
+const MENU = {
+  entrees: [
+    { name:'Burrata Pugliese', desc:'Burrata crémeuse, tomates cerises rôties, basilic frais, huile d\'olive vierge extra, fleur de sel. Un grand classique du sud de l\'Italie.', price:'14,50 €', model:'https://modelviewer.dev/shared-assets/models/shishkebab.glb', emoji:'🥗' },
+    { name:'Carpaccio di Manzo', desc:'Fines tranches de bœuf cru, copeaux de parmesan 24 mois, câpres, roquette sauvage, citron. Servi frais.', price:'16,00 €', model:'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb', emoji:'🍄' },
+    { name:'Polpette di Mare', desc:'Boulettes de crevettes et cabillaud, sauce vierge au citron vert, herbes fraîches, piment doux. Spécialité du chef.', price:'17,50 €', model:'https://modelviewer.dev/shared-assets/models/Astronaut.glb', emoji:'🦑' },
+    { name:'Zuppa di Pomodoro', desc:'Velouté de tomates San Marzano, crème fraîche, croûtons à l\'ail confit, basilic. Recette traditionnelle toscane.', price:'11,00 €', model:'https://modelviewer.dev/shared-assets/models/shishkebab.glb', emoji:'🥕' },
+  ],
+  plats: [
+    { name:'Tagliatelle al Ragù', desc:'Tagliatelles fraîches maison, ragù bolognese mijoté 6 heures, parmesan, noix de muscade. Le plat emblématique de Bologne.', price:'19,50 €', model:'https://modelviewer.dev/shared-assets/models/shishkebab.glb', emoji:'🍝' },
+    { name:'Spaghetti alle Vongole', desc:'Spaghettis, palourdes fraîches de Bretagne, vin blanc sec, ail, persil plat, huile d\'olive, piment doux.', price:'22,00 €', model:'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb', emoji:'🍜' },
+    { name:'Risotto ai Porcini', desc:'Riz Carnaroli, cèpes séchés et frais, beurre de truffe noire, parmesan fondant. Mantecato à la perfection.', price:'24,00 €', model:'https://modelviewer.dev/shared-assets/models/Astronaut.glb', emoji:'🍚' },
+    { name:'Margherita D.O.P.', desc:'Tomate San Marzano D.O.P., mozzarella di bufala Campana, basilic frais, huile d\'olive extra-vierge, cuite au four à bois.', price:'15,00 €', model:'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb', emoji:'🍕' },
+    { name:'Tartufo Nero', desc:'Crème de truffe noire, mozzarella fior di latte, champignons shiitake sautés, copeaux de truffe noire du Périgord. Pizza gastronomique.', price:'28,00 €', model:'https://modelviewer.dev/shared-assets/models/RobotExpressive/RobotExpressive.glb', emoji:'🥓' },
+    { name:'Quattro Stagioni', desc:'Jambon cuit italien, champignons de Paris, artichaut mariné, olives noires taggiasche, mozzarella, tomate.', price:'18,50 €', model:'https://modelviewer.dev/shared-assets/models/shishkebab.glb', emoji:'🌿' },
+    { name:'Lasagne della Nonna', desc:'Lasagnes fraîches maison, ragù de veau mijoté, béchamel à la muscade, parmesan gratinée, herbes fraîches du jardin.', price:'21,00 €', model:'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/Fox/glTF-Binary/Fox.glb', emoji:'🧆' },
+    { name:'Parmigiana di Melanzane', desc:'Aubergines frites en couches alternées, sauce tomate maison aux herbes, mozzarella fondante, basilic frais, gratinées au four.', price:'18,00 €', model:'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb', emoji:'🫕' },
+    { name:'Gratin di Gnocchi', desc:'Gnocchi de pomme de terre maison, gorgonzola dolce, cerneaux de noix, crème légère, gratinés à la chapelure dorée.', price:'20,00 €', model:'https://modelviewer.dev/shared-assets/models/Astronaut.glb', emoji:'🧀' },
+  ],
+  desserts: [
+    { name:'Tiramisù Classico', desc:'Biscuits boudoir imbibés d\'espresso fort, crème mascarpone, jaunes d\'œufs pasteurisés, cacao amer de qualité. Recette originale 1987.', price:'10,00 €', model:'https://modelviewer.dev/shared-assets/models/shishkebab.glb', emoji:'☕' },
+    { name:'Panna Cotta al Miele', desc:'Panna cotta à la vanille de Tahiti, miel de châtaignier, coulis de fruits rouges frais, amandes effilées torréfiées.', price:'9,00 €', model:'https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/ToyCar/glTF-Binary/ToyCar.glb', emoji:'🍮' },
+    { name:'Torta al Limone', desc:'Tarte au citron de Sicile sur sablé breton, meringue italienne brûlée à la flamme, zestes confits, coulis passion.', price:'11,00 €', model:'https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb', emoji:'🍋' },
+    { name:'Fondant Cioccolato', desc:'Coulant au chocolat Valrhona 72%, cœur liquide praliné noisette, quenelle de glace vanille de Madagascar, éclats de noisette caramélisée.', price:'12,50 €', model:'https://modelviewer.dev/shared-assets/models/RobotExpressive/RobotExpressive.glb', emoji:'🍫' },
+  ]
+};
 
-  function setStatus(type, msg) {
-    dot.className = 'dot ' + type;
-    statusText.textContent = msg;
-  }
+// ── State ──
+let currentSection = 'entrees';
+let currentIndex = 0;
+let inAR = false;
+const mv = document.getElementById('modal-mv');
 
+// ── Sections ──
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Open dish modal ──
+function openDish(section, index) {
+  currentSection = section;
+  currentIndex = index;
+  const dish = MENU[section][index];
+  document.getElementById('modal-title').textContent = section.charAt(0).toUpperCase() + section.slice(1);
+  document.getElementById('modal-dish-name').textContent = dish.name;
+  document.getElementById('modal-dish-desc').textContent = dish.desc;
+  document.getElementById('modal-price').textContent = dish.price;
+  mv.src = dish.model;
+  mv.autoRotate = true;
+  const modal = document.getElementById('modal');
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  checkAR();
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('ar-panel').classList.remove('visible');
+  document.body.style.overflow = '';
+  inAR = false;
+  mv.src = '';
+}
+
+function checkAR() {
+  const btn = document.getElementById('modal-ar-btn');
   mv.addEventListener('load', () => {
-    if (mv.canActivateAR) {
-      setStatus('green', 'Modèle prêt · AR disponible ✓');
-    } else {
-      setStatus('red', 'AR non disponible — utilise Chrome sur Android');
-      arBtn.disabled = true;
-    }
-  });
+    btn.disabled = !mv.canActivateAR;
+    if (!mv.canActivateAR) btn.textContent = '⚠️ AR non dispo (Chrome Android)';
+  }, { once: true });
+}
 
-  mv.addEventListener('ar-status', (e) => {
-    const s = e.detail.status;
-    if (s === 'session-started') setStatus('green', 'Session AR active — pointe vers une surface plate');
-    else if (s === 'object-placed') setStatus('green', 'Objet posé ✓ — tourne autour librement');
-    else if (s === 'failed') setStatus('red', 'Échec — essaie dans une pièce mieux éclairée');
-  });
+// ── Launch AR ──
+function launchAR() {
+  if (!mv.canActivateAR) { alert('Utilise Chrome sur Android pour l\'AR.'); return; }
+  buildARNav();
+  mv.activateAR();
+}
 
-  mv.addEventListener('ar-tracking', (e) => {
-    const s = e.detail.state;
-    if (s === 'tracking') setStatus('green', 'Surface détectée ✓ — appuie pour poser l\'objet');
-    else if (s === 'limited') setStatus('yellow', 'Tracking limité — bouge lentement vers une surface plate');
-    else if (s === 'not-tracking') setStatus('yellow', 'Recherche de surface... pointe vers le sol ou l\'assiette');
-  });
-
-  arBtn.addEventListener('click', () => {
-    if (mv.canActivateAR) mv.activateAR();
-    else alert('AR non disponible.\nUtilise Chrome sur Android récent.');
-  });
-
-  document.getElementById('grid').addEventListener('click', (e) => {
-    const card = e.target.closest('.card');
-    if (!card) return;
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('on'));
-    card.classList.add('on');
-    mv.src = card.dataset.url;
-    scale = 1;
-    mv.removeAttribute('scale');
-    setStatus('yellow', 'Chargement...');
-  });
-
-  const upload = document.getElementById('upload-zone');
-  const fileIn = document.getElementById('file-in');
-  upload.addEventListener('click', () => fileIn.click());
-  fileIn.addEventListener('change', (e) => {
-    const f = e.target.files[0]; if (!f) return;
-    mv.src = URL.createObjectURL(f);
-    document.querySelectorAll('.card').forEach(c => c.classList.remove('on'));
-    upload.innerHTML = `<div class="ico">✅</div><h3>${f.name}</h3><p>Chargé avec succès</p>`;
-    scale = 1;
-  });
-  upload.addEventListener('dragover', e => { e.preventDefault(); upload.classList.add('over'); });
-  upload.addEventListener('dragleave', () => upload.classList.remove('over'));
-  upload.addEventListener('drop', e => {
-    e.preventDefault(); upload.classList.remove('over');
-    const f = e.dataTransfer.files[0];
-    if (f && (f.name.endsWith('.glb') || f.name.endsWith('.gltf'))) {
-      mv.src = URL.createObjectURL(f);
-      upload.innerHTML = `<div class="ico">✅</div><h3>${f.name}</h3><p>Chargé avec succès</p>`;
-    }
-  });
-
-  function toggleRot(btn) { mv.autoRotate = !mv.autoRotate; btn.classList.toggle('on', mv.autoRotate); }
-  function toggleShadow(btn) {
-    shadowHigh = !shadowHigh;
-    mv.shadowIntensity = shadowHigh ? 2.5 : 1.2;
-    mv.shadowSoftness = shadowHigh ? 0.3 : 0.8;
-    btn.classList.toggle('on', shadowHigh);
+// ── AR events ──
+mv.addEventListener('ar-status', e => {
+  if (e.detail.status === 'session-started') {
+    inAR = true;
+    document.getElementById('ar-panel').classList.add('visible');
+  } else if (e.detail.status === 'not-presenting') {
+    inAR = false;
+    document.getElementById('ar-panel').classList.remove('visible');
   }
-  function scaleDown() { scale = Math.max(0.1, +(scale - 0.15).toFixed(2)); mv.setAttribute('scale', `${scale} ${scale} ${scale}`); setStatus('green', `Taille : ${Math.round(scale*100)}%`); }
-  function scaleUp() { scale = Math.min(5, +(scale + 0.15).toFixed(2)); mv.setAttribute('scale', `${scale} ${scale} ${scale}`); setStatus('green', `Taille : ${Math.round(scale*100)}%`); }
-  function resetAll() {
-    scale = 1; mv.removeAttribute('scale');
-    mv.cameraOrbit = 'auto auto auto';
-    mv.autoRotate = true;
-    document.getElementById('btn-rot').classList.add('on');
-    setStatus('green', 'Réinitialisé');
-  }
+});
+
+// ── Build AR nav cards ──
+function buildARNav() {
+  const nav = document.getElementById('ar-dish-nav');
+  const dishes = MENU[currentSection];
+  nav.innerHTML = '';
+  dishes.forEach((d, i) => {
+    const el = document.createElement('div');
+    el.className = 'ar-nav-item' + (i === currentIndex ? ' active' : '');
+    el.innerHTML = `<div class="ar-nav-name">${d.emoji} ${d.name}</div><div class="ar-nav-desc">${d.desc}</div><div class="ar-nav-price">${d.price}</div>`;
+    el.onclick = () => switchARDish(i);
+    nav.appendChild(el);
+  });
+  // scroll to active
+  setTimeout(() => {
+    const active = nav.querySelector('.active');
+    if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, 100);
+}
+
+// ── Switch dish in AR ──
+function switchARDish(index) {
+  currentIndex = index;
+  const dish = MENU[currentSection][index];
+  // update 3d model
+  mv.src = dish.model;
+  // update nav highlight
+  document.querySelectorAll('.ar-nav-item').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+  });
+  // scroll to card
+  const nav = document.getElementById('ar-dish-nav');
+  const active = nav.querySelectorAll('.ar-nav-item')[index];
+  if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  // update non-AR info too
+  document.getElementById('modal-dish-name').textContent = dish.name;
+  document.getElementById('modal-dish-desc').textContent = dish.desc;
+  document.getElementById('modal-price').textContent = dish.price;
+}
+
+// ── Keyboard close ──
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
 </body>
 </html>
