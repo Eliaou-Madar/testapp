@@ -136,24 +136,38 @@
       t._t = setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    // AR Google — Scene Viewer natif ARCore
+    // AR Google — Scene Viewer natif (model-viewer gère l'intent)
     document.getElementById('btn-google').addEventListener('click', () => {
-      const file = encodeURIComponent(MODEL_URL);
-      const fallback = encodeURIComponent(window.location.href);
-      const intent = `intent://arvr.google.com/scene-viewer/1.0?file=${file}&mode=ar_preferred#Intent;scheme=https;package=com.google.ar.core;action=android.intent.action.VIEW;S.browser_fallback_url=${fallback};end;`;
-      window.location.href = intent;
+      mv.setAttribute('ar-modes', 'scene-viewer');
+      if (!mv.canActivateAR) {
+        toast('Scene Viewer non disponible — nécessite Android avec ARCore');
+        mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+        return;
+      }
+      mv.activateAR();
+      mv.addEventListener('ar-status', function restore(e) {
+        if (e.detail.status === 'failed' || e.detail.status === 'not-presenting') {
+          mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+          mv.removeEventListener('ar-status', restore);
+        }
+      });
     });
 
     // AR WebXR — dans le navigateur
     document.getElementById('btn-webxr').addEventListener('click', () => {
+      mv.setAttribute('ar-modes', 'webxr');
       if (!mv.canActivateAR) {
         toast('WebXR non disponible — utilise Chrome sur Android');
+        mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
         return;
       }
-      const prev = mv.getAttribute('ar-modes');
-      mv.setAttribute('ar-modes', 'webxr');
       mv.activateAR();
-      requestAnimationFrame(() => mv.setAttribute('ar-modes', prev));
+      mv.addEventListener('ar-status', function restore(e) {
+        if (e.detail.status === 'failed' || e.detail.status === 'not-presenting') {
+          mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+          mv.removeEventListener('ar-status', restore);
+        }
+      });
     });
   </script>
 
