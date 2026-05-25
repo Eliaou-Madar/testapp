@@ -68,11 +68,6 @@
       color: #fff;
     }
 
-    .btn-webxr {
-      background: #7c6dfa;
-      color: #fff;
-    }
-
     #toast {
       position: fixed;
       bottom: 24px;
@@ -111,22 +106,20 @@
       auto-rotate
       shadow-intensity="1"
       ar
-      ar-modes="webxr scene-viewer quick-look"
+      ar-modes="scene-viewer quick-look"
       ar-scale="fixed"
       ar-placement="floor"
     ></model-viewer>
   </div>
 
   <div class="buttons">
-    <button class="btn btn-google" id="btn-google">AR Google</button>
-    <button class="btn btn-webxr" id="btn-webxr">AR WebXR</button>
+    <button class="btn btn-google" id="btn-ar">Voir en AR</button>
   </div>
 
   <div id="toast"></div>
 
   <script>
     const mv = document.getElementById('mv');
-    const MODEL_URL = 'https://3dmeals-assets.s3.il-central-1.amazonaws.com/magnifiko/models/glb/trio_de_burrata.glb';
 
     function toast(msg) {
       const t = document.getElementById('toast');
@@ -136,30 +129,12 @@
       t._t = setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    function launchAR(modes, errorMsg) {
-      mv.setAttribute('ar-modes', modes);
+    document.getElementById('btn-ar').addEventListener('click', () => {
       if (!mv.canActivateAR) {
-        toast(errorMsg);
-        mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+        toast('AR non disponible — nécessite Android avec ARCore ou iPhone/iPad');
         return;
       }
       mv.activateAR();
-      mv.addEventListener('ar-status', function restore(e) {
-        if (e.detail.status === 'failed' || e.detail.status === 'not-presenting') {
-          mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-          mv.removeEventListener('ar-status', restore);
-        }
-      });
-    }
-
-    // Scene Viewer (app Google native) + Quick Look iOS
-    document.getElementById('btn-google').addEventListener('click', () => {
-      launchAR('scene-viewer quick-look', 'Scene Viewer non disponible — nécessite Android avec ARCore');
-    });
-
-    // WebXR — AR dans le navigateur
-    document.getElementById('btn-webxr').addEventListener('click', () => {
-      launchAR('webxr', 'WebXR non disponible — utilise Chrome sur Android');
     });
   </script>
 
