@@ -136,11 +136,10 @@
       t._t = setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    // AR Google — Scene Viewer natif (model-viewer gère l'intent)
-    document.getElementById('btn-google').addEventListener('click', () => {
-      mv.setAttribute('ar-modes', 'scene-viewer');
+    function launchAR(modes, errorMsg) {
+      mv.setAttribute('ar-modes', modes);
       if (!mv.canActivateAR) {
-        toast('Scene Viewer non disponible — nécessite Android avec ARCore');
+        toast(errorMsg);
         mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
         return;
       }
@@ -151,23 +150,16 @@
           mv.removeEventListener('ar-status', restore);
         }
       });
+    }
+
+    // Scene Viewer (app Google native) + Quick Look iOS
+    document.getElementById('btn-google').addEventListener('click', () => {
+      launchAR('scene-viewer quick-look', 'Scene Viewer non disponible — nécessite Android avec ARCore');
     });
 
-    // AR WebXR — dans le navigateur
+    // WebXR — AR dans le navigateur
     document.getElementById('btn-webxr').addEventListener('click', () => {
-      mv.setAttribute('ar-modes', 'webxr');
-      if (!mv.canActivateAR) {
-        toast('WebXR non disponible — utilise Chrome sur Android');
-        mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-        return;
-      }
-      mv.activateAR();
-      mv.addEventListener('ar-status', function restore(e) {
-        if (e.detail.status === 'failed' || e.detail.status === 'not-presenting') {
-          mv.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
-          mv.removeEventListener('ar-status', restore);
-        }
-      });
+      launchAR('webxr', 'WebXR non disponible — utilise Chrome sur Android');
     });
   </script>
 
